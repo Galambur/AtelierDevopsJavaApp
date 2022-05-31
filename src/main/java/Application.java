@@ -13,7 +13,7 @@ public class Application {
         String username = "root";
         String password = "";
 
-        String queryString = "SELECT * FROM ingredient WHERE idIngredient=1;";
+        String queryGetString = "SELECT * FROM ingredient;";
         
         // ---- configure END
 
@@ -22,12 +22,16 @@ public class Application {
             Connection con = DriverManager.getConnection(url, username, password);
             Statement statement = con.createStatement();
             
-            ResultSet resultSet = statement.executeQuery(queryString);
+            ResultSet resultSet = statement.executeQuery(queryGetString);
             
             while (resultSet.next()){
-                System.out.println("id : " + resultSet.getInt("idIngredient"));
-                System.out.println("nom : " + resultSet.getString("nomIngredient"));
+                System.out.println(resultSet.getInt("idIngredient") + " - " + resultSet.getString("nomIngredient"));
             }
+            
+            String nomIngredient = "Ciboulette";
+            String queryPutString = "INSERT INTO ingredient(nomIngredient) VALUES (' " + nomIngredient + "');";
+            statement.execute(queryPutString);
+            
         } catch (Exception e){
             e.printStackTrace();
         }
