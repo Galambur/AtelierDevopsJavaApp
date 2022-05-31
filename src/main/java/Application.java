@@ -13,7 +13,7 @@ public class Application {
         String password = "";
         // The URL that will connect to TECFA’s MySQL server
         // Syntax: jdbc:TYPE:machine:port/DB_NAME
-        String url = "jdbc:mysql://localhost:3306/recettes_atelier_devops";
+        String url = "jdbc:mysql://localhost:3306/recettes_atelier_devops?serverTimezone=UTC";
         // A canned query string
         String queryString = "SELECT * FROM ingredient";
         
