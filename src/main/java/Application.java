@@ -1,7 +1,7 @@
-
-import java.sql.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 
 public class Application {
@@ -9,19 +9,25 @@ public class Application {
     public static void main(String[] args) throws Exception {
         // ---- configure this for your site
         
+        String url = "jdbc:mysql://localhost:3306/recettes_atelier_devops?serverTimezone=UTC";
         String username = "root";
         String password = "";
-        // The URL that will connect to TECFA’s MySQL server
-        // Syntax: jdbc:TYPE:machine:port/DB_NAME
-        String url = "jdbc:mysql://localhost:3306/recettes_atelier_devops?serverTimezone=UTC";
-        // A canned query string
-        String queryString = "SELECT * FROM ingredient";
+
+        String queryString = "SELECT * FROM ingredient WHERE idIngredient=1;";
         
         // ---- configure END
 
 
         try{
             Connection con = DriverManager.getConnection(url, username, password);
+            Statement statement = con.createStatement();
+            
+            ResultSet resultSet = statement.executeQuery(queryString);
+            
+            while (resultSet.next()){
+                System.out.println("id : " + resultSet.getInt("idIngredient"));
+                System.out.println("nom : " + resultSet.getString("nomIngredient"));
+            }
         } catch (Exception e){
             e.printStackTrace();
         }
