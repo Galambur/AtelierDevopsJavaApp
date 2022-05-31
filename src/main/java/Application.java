@@ -70,8 +70,16 @@ public class Application {
                         ajoutIngredientARecette(statement, idIngredient, idRecette);
                         continue;
                     }
-                    case 7:
+                    case 7:{
+                        System.out.println("\n Entrez l'identifiant de la recette voulue");
+                        var idRecette = parseInt(scanner.nextLine());
+                        System.out.println("\tVoilà la liste de ses ingrédients :");
+                        showIngredientsByIdRecette(statement, idRecette);
+                        System.out.println("Entrez l'identifiant de l'ingredient que vous voulez supprimer");
+                        var idIngredient = parseInt(scanner.nextLine());
+                        supprimerIngredientARecette(statement, idIngredient, idRecette);
                         continue;
+                    }
                     default:
                         break OUTER;
                 }
@@ -82,19 +90,16 @@ public class Application {
         }
     }
     
-    public static void showAllIngredients(Statement statement) throws SQLException{
-        String getAllIngredientsQuery = "SELECT * FROM ingredient;";
-
-        ResultSet resultSet = statement.executeQuery(getAllIngredientsQuery);
-
-        while (resultSet.next()) {
-            System.out.println(resultSet.getInt("idIngredient") + " - " + resultSet.getString("nomIngredient"));
-        }
-    }
+    /*** recette ***/
 
     public static void ajoutIngredientARecette(Statement statement, int idIngredient, int idRecette) throws SQLException {
         String addIngredientToRecette = "INSERT INTO contient VALUES (" + idIngredient + ", " + idRecette + ")";
         statement.execute(addIngredientToRecette);
+    }
+
+    public static void supprimerIngredientARecette(Statement statement, int idIngredient, int idRecette) throws SQLException {
+        String deleteIngredientToRecette = "DELETE FROM contient WHERE idIngredient=" + idIngredient + " AND idRecette=" + idRecette;
+        statement.execute(deleteIngredientToRecette);
     }
 
     public static void changeNomRecette(Statement statement, int id, String nouveauNom) throws SQLException {
@@ -128,24 +133,26 @@ public class Application {
             System.out.println("\t " + resultSet.getString("nomIngredient"));
         } while (resultSet.next());
     }
+    
+    /*** ingredients ***/
+    
+    public static void showAllIngredients(Statement statement) throws SQLException{
+        String getAllIngredientsQuery = "SELECT * FROM ingredient;";
 
-    public void exemple(String url, String username, String password, String queryGetString) {
-        try {
-            Connection con = DriverManager.getConnection(url, username, password);
-            Statement statement = con.createStatement();
+        ResultSet resultSet = statement.executeQuery(getAllIngredientsQuery);
 
-            ResultSet resultSet = statement.executeQuery(queryGetString);
+        while (resultSet.next()) {
+            System.out.println(resultSet.getInt("idIngredient") + " - " + resultSet.getString("nomIngredient"));
+        }
+    }
+    
+    public static void showIngredientsByIdRecette(Statement statement, int idRecette) throws SQLException{
+        String showIngredientsQuery = "SELECT * FROM contient, ingredient WHERE contient.idIngredient = ingredient.idIngredient AND contient.idRecette=" + idRecette;
 
-            while (resultSet.next()) {
-                System.out.println(resultSet.getInt("idIngredient") + " - " + resultSet.getString("nomIngredient"));
-            }
+        ResultSet resultSet = statement.executeQuery(showIngredientsQuery);
 
-            String nomIngredient = "Ciboulette";
-            String queryPutString = "INSERT INTO ingredient(nomIngredient) VALUES (' " + nomIngredient + "');";
-            statement.execute(queryPutString);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        while (resultSet.next()) {
+            System.out.println(resultSet.getInt("idIngredient") + " - " + resultSet.getString("nomIngredient"));
         }
     }
 }
