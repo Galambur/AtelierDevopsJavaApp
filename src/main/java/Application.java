@@ -60,8 +60,16 @@ public class Application {
                         changeNomRecette(statement, id, nouveauNom);
                         continue;
                     }
-                    case 6:
+                    case 6:{
+                        System.out.println("\n Entrez l'identifiant de la recette voulue");
+                        var idRecette = parseInt(scanner.nextLine());
+                        System.out.println("\tVoilà la liste des ingrédients :");
+                        showAllIngredients(statement);
+                        System.out.println("Entrez l'identifiant de l'ingredient que vous voulez ajouter");
+                        var idIngredient = parseInt(scanner.nextLine());
+                        ajoutIngredientARecette(statement, idIngredient, idRecette);
                         continue;
+                    }
                     case 7:
                         continue;
                     default:
@@ -72,6 +80,21 @@ public class Application {
             // System.in has been closed
             throw e;
         }
+    }
+    
+    public static void showAllIngredients(Statement statement) throws SQLException{
+        String getAllIngredientsQuery = "SELECT * FROM ingredient;";
+
+        ResultSet resultSet = statement.executeQuery(getAllIngredientsQuery);
+
+        while (resultSet.next()) {
+            System.out.println(resultSet.getInt("idIngredient") + " - " + resultSet.getString("nomIngredient"));
+        }
+    }
+
+    public static void ajoutIngredientARecette(Statement statement, int idIngredient, int idRecette) throws SQLException {
+        String addIngredientToRecette = "INSERT INTO contient VALUES (" + idIngredient + ", " + idRecette + ")";
+        statement.execute(addIngredientToRecette);
     }
 
     public static void changeNomRecette(Statement statement, int id, String nouveauNom) throws SQLException {
