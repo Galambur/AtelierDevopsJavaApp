@@ -1,39 +1,82 @@
 
+import static java.lang.Integer.parseInt;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
 
 public class Application {
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Bienvenue sur notre site de recette. Veuillez choisir une option en entrant au clavier");
-        System.out.println("1 - Voir la liste des recettes");
+        System.out.println("Bienvenue sur notre site de recette.");
 
-        System.out.println("2 - Consulter une recette");
-        System.out.println("3 - Ajouter une recette");
-        System.out.println("4 - Supprimer une recette");
-
-        System.out.println("5 - Changer le nom d'une recette");
-        System.out.println("6 - Ajouter un ingrédient à une recette");
-        System.out.println("7 - Supprimer un ingrédient à une recette");
-
-        System.out.println("");
-
-        // todo : faire l'entrée de l'utilisateur
-        // ---- configure 
-        String url = "jdbc:mysql://localhost:3306/recettes_atelier_devops?serverTimezone=UTC";
-        String username = "root";
-        String password = "";
-
-        // ---- configure END
-        Connection con = DriverManager.getConnection(url, username, password);
-        Statement statement = con.createStatement();
-
-        if (true) {
-            showRecetteById(statement, 1);
+        int line = 1;
+        Scanner scanner = new Scanner(System.in);
+        try {
+            OUTER:
+            while (line != 0) {
+                System.out.println("\n1 - Voir la liste des recettes");
+                System.out.println("2 - Consulter une recette");
+                System.out.println("3 - Ajouter une recette");
+                System.out.println("4 - Supprimer une recette");
+                System.out.println("5 - Changer le nom d'une recette");
+                System.out.println("6 - Ajouter un ingrédient à une recette");
+                System.out.println("7 - Supprimer un ingrédient à une recette");
+                System.out.println("0 - Quitter");
+                System.out.println("\n Entrez votre choix au clavier");
+                line = parseInt(scanner.nextLine());
+                
+                String url = "jdbc:mysql://localhost:3306/recettes_atelier_devops?serverTimezone=UTC";
+                String username = "root";
+                String password = "";
+                
+                Connection con = DriverManager.getConnection(url, username, password);
+                Statement statement = con.createStatement();
+                
+                // liste des possibilités
+                switch (line) {
+                    case 1:
+                        showAllRecettes(statement);
+                        break;
+                    case 2:
+                    {
+                        System.out.println("\n Entrez l'identifiant de la recette voulue");
+                        var id = parseInt(scanner.nextLine());
+                        showRecetteById(statement, id);
+                        continue;
+                    }
+                    case 3:
+                        continue;
+                    case 4:
+                        continue;
+                    case 5:
+                    {
+                        System.out.println("\n Entrez l'identifiant de la recette voulue");
+                        var id = parseInt(scanner.nextLine());
+                        System.out.println("Entrez le nouveau nom");
+                        var nouveauNom = scanner.nextLine();
+                        changeNomRecette(statement, id, nouveauNom);
+                        continue;
+                    }
+                    case 6:
+                        continue;
+                    case 7:
+                        continue;
+                    default:
+                        break OUTER;
+                }
+            }
+        } catch (Exception e) {
+            // System.in has been closed
+            throw e;
         }
+    }
+
+    public static void changeNomRecette(Statement statement, int id, String nouveauNom) throws SQLException {
+        String changeNomRecetteQuery = "UPDATE recette SET nom='" + nouveauNom + "' WHERE idRecette=" + id;
+        statement.execute(changeNomRecetteQuery);
     }
 
     public static void showAllRecettes(Statement statement) throws SQLException {
