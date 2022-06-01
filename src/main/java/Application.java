@@ -47,8 +47,25 @@ public class Application {
                         showRecetteById(statement, id);
                         continue;
                     }
-                    case 3:
+                    case 3:{
+                        System.out.println("\n Entrez le nom de votre recette");
+                        var nomRecette = scanner.nextLine();
+                        System.out.println("\n Entrez la description de votre recette");
+                        var description = scanner.nextLine();
+                        var idRecette = ajouterRecette(statement, nomRecette, description);
+                        System.out.println("Added " + idRecette);
+                        
+                        int idIngredient = 0;
+                        showAllIngredients(statement);
+                        do {
+                            System.out.println("Entrez l'identifiant d'un ingredient, ou 0 pour arrêter la saisie");
+                            idIngredient = parseInt(scanner.nextLine());
+                            if(idIngredient == 0)
+                                break;
+                            ajouterIngredientToRecette(statement, idRecette, idIngredient);
+                        } while (idIngredient != 0);
                         continue;
+                    }
                     case 4:{
                         System.out.println("\n Entrez l'identifiant de la recette voulue");
                         var id = parseInt(scanner.nextLine());
@@ -95,6 +112,20 @@ public class Application {
     }
     
     /*** recette ***/
+    
+    public static int ajouterRecette(Statement statement, String nomRecette, String description) throws SQLException {
+        String addRecetteQuery = "INSERT INTO recette (nom, description) VALUES ('" + nomRecette + "', '" + description + "');";        
+        statement.executeUpdate(addRecetteQuery, Statement.RETURN_GENERATED_KEYS);    
+        
+        String getLastIdQuery = "SELECT MAX(idRecette) as max FROM recette;";
+        ResultSet resultSet = statement.executeQuery(getLastIdQuery);
+        
+        int id = 0;
+        while (resultSet.next()){
+            id = resultSet.getInt("max");
+        }
+        return id;
+    }
     
     public static void deleteRecette(Statement statement, int idRecette) throws SQLException{
         String deleteContientLinkQuery = "DELETE FROM contient WHERE idRecette=" + idRecette;
@@ -147,6 +178,11 @@ public class Application {
     }
     
     /*** ingredients ***/
+    
+    public static void ajouterIngredientToRecette(Statement statement, int idRecette, int idIngredient) throws SQLException {
+        String addContientQuery = "INSERT INTO contient VALUES (" + idIngredient + ", " + idRecette + ");";
+        statement.execute(addContientQuery);
+    }
     
     public static void showAllIngredients(Statement statement) throws SQLException{
         String getAllIngredientsQuery = "SELECT * FROM ingredient;";
