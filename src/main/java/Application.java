@@ -49,8 +49,12 @@ public class Application {
                     }
                     case 3:
                         continue;
-                    case 4:
+                    case 4:{
+                        System.out.println("\n Entrez l'identifiant de la recette voulue");
+                        var id = parseInt(scanner.nextLine());
+                        deleteRecette(statement, id);
                         continue;
+                    }
                     case 5:
                     {
                         System.out.println("\n Entrez l'identifiant de la recette voulue");
@@ -91,6 +95,14 @@ public class Application {
     }
     
     /*** recette ***/
+    
+    public static void deleteRecette(Statement statement, int idRecette) throws SQLException{
+        String deleteContientLinkQuery = "DELETE FROM contient WHERE idRecette=" + idRecette;
+        statement.execute(deleteContientLinkQuery);
+        
+        String deleteRecetteQuery = "DELETE FROM recette WHERE idRecette="+ idRecette;
+        statement.execute(deleteRecetteQuery);
+    }
 
     public static void ajoutIngredientARecette(Statement statement, int idIngredient, int idRecette) throws SQLException {
         String addIngredientToRecette = "INSERT INTO contient VALUES (" + idIngredient + ", " + idRecette + ")";
