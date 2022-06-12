@@ -111,10 +111,27 @@ public class Application {
         }
     }
     
-    /*** recette ***/
+    // methodes utilisees pour les tests unitaires
+    public static String createAjouterRecetteQuery(String nomRecette, String description){
+        return "INSERT INTO recette (nom, description) VALUES ('" + nomRecette + "', '" + description + "');";
+    }
     
-    public static int ajouterRecette(Statement statement, String nomRecette, String description) throws SQLException {
-        String addRecetteQuery = "INSERT INTO recette (nom, description) VALUES ('" + nomRecette + "', '" + description + "');";        
+    public static String createShowRecetteByIdQuery(int id){
+        return "SELECT * FROM recette, contient, ingredient "
+                + "WHERE recette.idRecette = contient.idRecette "
+                + "AND ingredient.idIngredient = contient.idIngredient "
+                + "AND recette.idRecette = " + id + ";";
+    }
+    
+    // methodes utilisees dans le programme
+    public static int ajouterRecette(Statement statement, String nomRecette, String description) throws SQLException, IllegalArgumentException  {
+        if(statement == null)
+            throw new IllegalArgumentException ("Le statement ne peut pas être nul");
+        
+        if("".equals(nomRecette) || nomRecette == null || "".equals(description) || description == null)
+            throw new IllegalArgumentException();
+        
+        String addRecetteQuery = createAjouterRecetteQuery(nomRecette, description);   
         statement.executeUpdate(addRecetteQuery, Statement.RETURN_GENERATED_KEYS);    
         
         String getLastIdQuery = "SELECT MAX(idRecette) as max FROM recette;";
@@ -127,7 +144,10 @@ public class Application {
         return id;
     }
     
-    public static void deleteRecette(Statement statement, int idRecette) throws SQLException{
+    public static void deleteRecette(Statement statement, int idRecette) throws SQLException, Exception{
+        if(statement == null)
+            throw new Exception("Le statement ne peut pas être nul");
+        
         String deleteContientLinkQuery = "DELETE FROM contient WHERE idRecette=" + idRecette;
         statement.execute(deleteContientLinkQuery);
         
@@ -135,22 +155,34 @@ public class Application {
         statement.execute(deleteRecetteQuery);
     }
 
-    public static void ajoutIngredientARecette(Statement statement, int idIngredient, int idRecette) throws SQLException {
+    public static void ajoutIngredientARecette(Statement statement, int idIngredient, int idRecette) throws SQLException, Exception {
+        if(statement == null)
+            throw new Exception("Le statement ne peut pas être nul");
+        
         String addIngredientToRecette = "INSERT INTO contient VALUES (" + idIngredient + ", " + idRecette + ")";
         statement.execute(addIngredientToRecette);
     }
 
-    public static void supprimerIngredientARecette(Statement statement, int idIngredient, int idRecette) throws SQLException {
+    public static void supprimerIngredientARecette(Statement statement, int idIngredient, int idRecette) throws SQLException, Exception {
+        if(statement == null)
+            throw new Exception("Le statement ne peut pas être nul");
+        
         String deleteIngredientToRecette = "DELETE FROM contient WHERE idIngredient=" + idIngredient + " AND idRecette=" + idRecette;
         statement.execute(deleteIngredientToRecette);
     }
 
-    public static void changeNomRecette(Statement statement, int id, String nouveauNom) throws SQLException {
+    public static void changeNomRecette(Statement statement, int id, String nouveauNom) throws SQLException, Exception {
+        if(statement == null)
+            throw new Exception("Le statement ne peut pas être nul");
+        
         String changeNomRecetteQuery = "UPDATE recette SET nom='" + nouveauNom + "' WHERE idRecette=" + id;
         statement.execute(changeNomRecetteQuery);
     }
 
-    public static void showAllRecettes(Statement statement) throws SQLException {
+    public static void showAllRecettes(Statement statement) throws SQLException, Exception {
+        if(statement == null)
+            throw new Exception("Le statement ne peut pas être nul");
+        
         String getAllRecettesQuery = "SELECT * FROM recette;";
 
         ResultSet resultSet = statement.executeQuery(getAllRecettesQuery);
@@ -160,11 +192,11 @@ public class Application {
         }
     }
 
-    public static void showRecetteById(Statement statement, int id) throws SQLException {
-        String getRecetteQuery = "SELECT * FROM recette, contient, ingredient "
-                + "WHERE recette.idRecette = contient.idRecette "
-                + "AND ingredient.idIngredient = contient.idIngredient "
-                + "AND recette.idRecette = " + id + ";";
+    public static void showRecetteById(Statement statement, int id) throws SQLException, Exception {
+        if(statement == null)
+            throw new Exception("Le statement ne peut pas être nul");
+        
+        String getRecetteQuery = createShowRecetteByIdQuery(id);
 
         ResultSet resultSet = statement.executeQuery(getRecetteQuery);
         resultSet.first();
@@ -177,7 +209,6 @@ public class Application {
         } while (resultSet.next());
     }
     
-    /*** ingredients ***/
     
     public static void ajouterIngredientToRecette(Statement statement, int idRecette, int idIngredient) throws SQLException {
         String addContientQuery = "INSERT INTO contient VALUES (" + idIngredient + ", " + idRecette + ");";
